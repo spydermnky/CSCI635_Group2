@@ -1,0 +1,6 @@
+data/PetImages/
+data/*.zip
+.venv/
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store
