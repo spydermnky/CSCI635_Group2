@@ -3,6 +3,7 @@ from torchvision import transforms
 import torch.nn as nn
 import torch.nn.functional as F
 import time
+import matplotlib.pyplot as plt
 
 class Net(nn.Module):
     def __init__(self, num_classes=2):
@@ -45,7 +46,7 @@ def get_transform_pipeline():
         )
     ])
     
-def train_model(model, dataloader, device, criterion, optimizer, num_epochs, model_path):
+def train_model(model, dataloader, device, criterion, optimizer, num_epochs, model_path, model_file_extension):
     for epoch in range(num_epochs):
         print(f'Epoch {epoch}')
         t1 = time.time()
@@ -62,27 +63,41 @@ def train_model(model, dataloader, device, criterion, optimizer, num_epochs, mod
             optimizer.step()
         t2 = time.time()
         print(f'Epoch {epoch} length: {t2-t1:0.3f}')
-        torch.save(model.state_dict(), f'model_path_{epoch}')
+        torch.save(model.state_dict(), f'{model_path}_{epoch}{model_file_extension}')
 
-def test_model(dataloader, device, model_path):
-    model = Net()
-    model.load_state_dict(torch.load(model_path, weights_only=True))
-    model.eval()
-    
-    running_corrects = 0
-    total_samples = 0
-    
-    with torch.no_grad():
-        for images, targets in dataloader:
-            images, targets = images.to(device), targets.to(device)
-            
-            outputs = model(images)
-            
-            _, predictions = torch.max(outputs, dim=1)
-            
-            running_corrects += torch.sum(predictions == targets).item()
-            total_samples += targets.size(0)
-            
-    accuracy = (running_corrects / total_samples) * 100
-    print(f"Test Accuracy: {accuracy:.2f}%")
-    return accuracy
+def validate_model(dataloader, device, num_epochs, model_path, model_file_extension):
+    accuracies = []
+    for epoch in range(num_epochs):
+        model = Net()
+        model.load_state_dict(torch.load(f'{model_path}_{epoch}{model_file_extension}', weights_only=True))
+        model.eval()
+        
+        running_corrects = 0
+        total_samples = 0
+        
+        with torch.no_grad():
+            for images, targets in dataloader:
+                images, targets = images.to(device), targets.to(device)
+                
+                outputs = model(images)
+                
+                _, predictions = torch.max(outputs, dim=1)
+                
+                running_corrects += torch.sum(predictions == targets).item()
+                total_samples += targets.size(0)
+                
+        accuracy = (running_corrects / total_samples) * 100
+        print(f"Epoch {epoch} Test Accuracy: {accuracy:.2f}%")
+        accuracies.append(accuracy)
+    return accuracies
+
+def plot_accuracies(accuracies, num_epochs, label, fig = None, ax = None):
+    plt.rcParams.update({'font.size': 20})
+    if fig == None or ax == None: fig, ax = plt.subplots(1, 1, figsize = (20, 10))
+    ax.set_title('')
+    ax.set_ylabel('Accuracy')
+    ax.set_xlabel('Number of Epochs')
+    ax.plot(range(num_epochs), accuracies, label = label)
+    plt.legend()
+    plt.show()
+    return fig, ax
