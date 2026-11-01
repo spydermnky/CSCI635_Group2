@@ -10,9 +10,9 @@ MODEL_PATH = 'trained_model.pth'
 
 transform_pipeline = get_transform_pipeline()
 
-train_dataset = ImageFolder(root = './SmallPetImages/', transform = transform_pipeline)
+train_dataset = ImageFolder(root = './PetImages/', transform = transform_pipeline)
 train_dataloader = DataLoader(train_dataset, batch_size = 10, shuffle = True)
-test_dataset = ImageFolder(root = './SmallPetImagesTest/', transform = transform_pipeline)
+test_dataset = ImageFolder(root = './SmallPetImages/', transform = transform_pipeline)
 test_dataloader = DataLoader(test_dataset, batch_size = 10, shuffle = True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
