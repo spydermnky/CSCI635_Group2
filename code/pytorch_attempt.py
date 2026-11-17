@@ -12,11 +12,11 @@ MODEL_FILE_TYPE = '.pth'
 
 transform_pipeline = get_transform_pipeline()
 
-train_dataset = ImageFolder(root = 'data/TrainingPetImages/', transform = transform_pipeline)
+train_dataset = ImageFolder(root = '../data/TrainingPetImages/', transform = transform_pipeline)
 train_dataloader = DataLoader(train_dataset, batch_size = 10, shuffle = True)
-validation_dataset = ImageFolder(root = 'data/ValidationPetImages/', transform = transform_pipeline)
+validation_dataset = ImageFolder(root = '../data/ValidationPetImages/', transform = transform_pipeline)
 validation_dataloader = DataLoader(validation_dataset, batch_size = 10, shuffle = True)
-test_dataset = ImageFolder(root = 'data/TestPetImages/', transform = transform_pipeline)
+test_dataset = ImageFolder(root = '../data/TestPetImages/', transform = transform_pipeline)
 test_dataloader = DataLoader(test_dataset, batch_size = 10, shuffle = True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
